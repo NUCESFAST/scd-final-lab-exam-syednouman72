@@ -1,36 +1,49 @@
 pipeline {
     agent any
+
+     environment {
+         registry = "syednouman1618/scd-final"
+        DOCKER_CREDENTIALS ='syednouman1618-dockerhub'
+        dockerImage = ''
+    }
+
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/NUCESFAST/scd-final-lab-exam-syednouman72.git'
-            }
-        }
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'  // Or whatever command you use to install dependencies
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build('your-dockerhub-username/your-image-name')
+                    // Build Docker image
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
         }
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        docker.image('your-dockerhub-username/your-image-name').push('latest')
+                    // Login to Docker Hub
+                    docker.withRegistry('', DOCKER_CREDENTIALS) {
+                        // Push the built image to Docker Hub
+                        dockerImage.push()
                     }
                 }
             }
         }
-        stage('Deploy and Test') {
+
+        stage('Deploy') {
             steps {
-                // Deploy the Docker image and test the application
-                // Ensure seamless communication between containers
+                script {
+                    // Deploy using Docker Compose
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Cleanup
+            script {
+                // Stop and remove containers after use
+                sh 'docker-compose down'
             }
         }
     }
