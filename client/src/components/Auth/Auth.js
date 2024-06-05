@@ -40,7 +40,7 @@ const Auth = (props) => {
     e.preventDefault();
 
     await axios.post('http://localhost:4000/signup', {
-      email, username, password
+      email, password
     }).then((res) => {
       history.push('/login');
     }).catch((err) => {

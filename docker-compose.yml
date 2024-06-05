@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "1172:3000"
+    depends_on:
+      - auth
+      - classrooms
+      - posts
+      - eventbus
+
+  auth:
+    build:
+      context: ./Auth
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/ClassroomMS
+
+  classrooms:
+    build:
+      context: ./Classrooms
+      dockerfile: Dockerfile
+    ports:
+      - "4001:4001"
+    depends_on:
+      - mongodb
+      - eventbus
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/ClassroomMS
+
+  posts:
+    build:
+      context: ./Post
+      dockerfile: Dockerfile
+    ports:
+      - "4002:4002"
+    depends_on:
+      - mongodb
+      - eventbus
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/ClassroomMS
+
+  eventbus:
+    build:
+      context: ./event-bus
+      dockerfile: Dockerfile
+    ports:
+      - "4009:4009"
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
