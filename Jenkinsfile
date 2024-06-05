@@ -8,7 +8,7 @@ pipeline {
     }
 
     stages {
-        stage('Build Docker Image') {
+        stage('21i-1172 Build Docker Image') {
             steps {
                 script {
                     // Build Docker image
@@ -16,7 +16,7 @@ pipeline {
                 }
             }
         }
-        stage('Push Docker Image') {
+        stage('21i-1172 Push Docker Image') {
             steps {
                 script {
                     // Login to Docker Hub
@@ -28,7 +28,7 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('21i-1172 Deploy') {
             steps {
                 script {
                     // Deploy using Docker Compose
